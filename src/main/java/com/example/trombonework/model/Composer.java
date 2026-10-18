@@ -2,9 +2,16 @@ package com.example.trombonework.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@Entity
+@Table(name = "composers")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Composer {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
@@ -12,6 +19,7 @@ public class Composer {
     private Integer birthYear;
     private Integer deathYear;
     private String era;
+    @Column(length = 1000)
     private String biography;
     private String portraitUrl;
 

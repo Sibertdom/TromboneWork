@@ -15,9 +15,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.collections.transformation.SortedList;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class Controller {
 
     @FXML private Label mainTitleLabel;
@@ -30,7 +32,12 @@ public class Controller {
     @FXML private Label statusLabel;
     @FXML private TextArea notesDetailsArea; // Нове поле для відображення нотаток
 
-    private final TromboneService tromboneService = new TromboneService();
+    private final TromboneService tromboneService;
+
+    // Spring сам автоматично підставить правильний TromboneService з усіма репозиторіями
+    public Controller(TromboneService tromboneService) {
+        this.tromboneService = tromboneService;
+    }
     private ObservableList<TromboneWork> masterWorksList;
     private FilteredList<TromboneWork> filteredData;
     private double hue = 0;

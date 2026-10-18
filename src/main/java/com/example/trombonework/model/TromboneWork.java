@@ -1,10 +1,19 @@
 package com.example.trombonework.model;
 
-public class TromboneWork {
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+
+@Entity
+@Table(name = "trombone_works")
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TromboneWork {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                  // Унікальний ID
     private String title;             // Назва
-    private Long composerId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "composer_id")
     private Composer composer;          // Композитор
     private String accompanimentType; // Тип супроводу (ф-но, оркестр тощо)
     private Integer difficultyLevel;  // Рівень складності (1-6)
@@ -20,7 +29,8 @@ public class TromboneWork {
     private Integer yearComposed;     // Рік написання
     private String scoreUrl;          // Посилання на PDF ноти або відео
     private Boolean isFavorite;       // Прапорець обраного
-    private String notes;             // Нотатки та примітки
+    @Column(columnDefinition = "TEXT")
+    private String notes; // Нотатки та примітки
 
     // Порожній конструктор
     public TromboneWork() {}
@@ -58,14 +68,6 @@ public class TromboneWork {
 
     public Composer getComposer() { return composer; }
     public void setComposer(Composer composer) { this.composer = composer; }
-
-    public Long getComposerId() {
-        return composerId;
-    }
-
-    public void setComposerId(Long composerId) {
-        this.composerId = composerId;
-    }
 
     public String getAccompanimentType() { return accompanimentType; }
     public void setAccompanimentType(String accompanimentType) { this.accompanimentType = accompanimentType; }
@@ -110,7 +112,6 @@ public class TromboneWork {
     public static class Builder {
         private Long id;
         private String title;
-        private Long composerId;
         private Composer composer;
         private String accompanimentType;
         private Integer difficultyLevel;
@@ -124,14 +125,11 @@ public class TromboneWork {
         private Integer yearComposed;
         private String scoreUrl;
         private Boolean isFavorite;
+        @Column(length = 2000)
         private String notes;
 
         public Builder id(Long id) { this.id = id; return this; }
         public Builder title(String title) { this.title = title; return this; }
-        public Builder composerId(Long composerId) {
-            this.composerId = composerId;
-            return this;
-        }
         public Builder composer(Composer composer) { this.composer = composer; return this; }
         public Builder accompanimentType(String accompanimentType) { this.accompanimentType = accompanimentType; return this; }
         public Builder difficultyLevel(Integer difficultyLevel) { this.difficultyLevel = difficultyLevel; return this; }

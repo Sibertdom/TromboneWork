@@ -109,7 +109,6 @@ public class WorkDialog {
                         .id(id)
                         .title(titleField.getText())
                         .composer(tempComposer)
-                        .composerId(initialWork != null ? initialWork.getComposerId() : System.currentTimeMillis())
                         .typeOfTrombone(typeField.getText())
                         .accompanimentType(accompanimentField.getText())
                         .difficultyLevel(difficulty)

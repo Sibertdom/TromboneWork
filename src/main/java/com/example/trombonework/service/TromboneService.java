@@ -2,38 +2,50 @@ package com.example.trombonework.service;
 
 import com.example.trombonework.model.Composer;
 import com.example.trombonework.model.TromboneWork;
+import com.example.trombonework.repository.ComposerRepository;
+import com.example.trombonework.repository.WorkRepository;
 import com.example.trombonework.util.SampleDataFactory;
+import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+@Service
 public class TromboneService {
 
-    private final JsonStorageService storageService = new JsonStorageService();
+    private final WorkRepository workRepository;
+    private final ComposerRepository composerRepository;
+
+    public TromboneService(WorkRepository workRepository, ComposerRepository composerRepository) {
+        this.workRepository = workRepository;
+        this.composerRepository = composerRepository;
+    }
+
+    // Автоматично заповнюємо базу початковими даними при першому запуску, якщо вона порожня
+    @PostConstruct
+    public void initData() {
+        if (workRepository.count() == 0) {
+            List<Composer> initialComposers = SampleDataFactory.getInitialComposers();
+            composerRepository.saveAll(initialComposers);
+
+            List<TromboneWork> initialWorks = SampleDataFactory.getInitialWorks();
+            workRepository.saveAll(initialWorks);
+        }
+    }
 
     // --- Робота з композиторами ---
 
     public List<Composer> getAllComposers() {
-        List<Composer> composers = storageService.loadComposers();
-        if (composers.isEmpty()) {
-            composers = SampleDataFactory.getInitialComposers();
-            storageService.saveComposers(composers);
-        }
-        return new ArrayList<>(composers);
+        return composerRepository.findAll();
     }
 
     public void addComposer(Composer composer) {
-        List<Composer> composers = getAllComposers();
-        composers.add(composer);
-        storageService.saveComposers(composers);
+        composerRepository.save(composer);
     }
 
     /**
      * Знаходить існуючого композитора за повним ім'ям або створює нового,
-     * якщо його ще немає у файлі composers.json.
+     * якщо його ще немає в базі даних.
      */
     public Composer findOrCreateComposer(String fullName) {
         if (fullName == null || fullName.isBlank()) {
@@ -44,15 +56,14 @@ public class TromboneService {
 
         // Шукаємо за повним ім'ям (без урахування регістру)
         for (Composer c : composers) {
-            if (c.getFullName().equalsIgnoreCase(trimmedName)) {
+            String fullCompName = (c.getFirstName() != null ? c.getFirstName() + " " : "") + c.getLastName();
+            if (fullCompName.trim().equalsIgnoreCase(trimmedName)) {
                 return c;
             }
         }
 
         // Якщо не знайдено — створюємо нового
         Composer newComposer = new Composer();
-        newComposer.setId(System.currentTimeMillis());
-
         String[] parts = trimmedName.split("\\s+", 2);
         if (parts.length > 1) {
             newComposer.setFirstName(parts[0]);
@@ -61,70 +72,39 @@ public class TromboneService {
             newComposer.setLastName(parts[0]);
         }
 
-        addComposer(newComposer);
-        return newComposer;
+        return composerRepository.save(newComposer);
     }
 
     // --- Робота з творами ---
 
     public List<TromboneWork> getAllWorks() {
-        List<Composer> composers = getAllComposers();
-        List<TromboneWork> works = storageService.loadWorks();
-
-        if (works.isEmpty()) {
-            works = SampleDataFactory.getInitialWorks();
-            storageService.saveWorks(works);
-        }
-
-        // Швидка Map для пошуку композитора за id
-        Map<Long, Composer> composerMap = composers.stream()
-                .collect(Collectors.toMap(Composer::getId, Function.identity(), (c1, c2) -> c1));
-
-        // Зв'язуємо об'єкт Composer з кожним твором за його composerId
-        for (TromboneWork work : works) {
-            if (work.getComposerId() != null) {
-                work.setComposer(composerMap.get(work.getComposerId()));
-            }
-        }
-
-        return new ArrayList<>(works);
+        return workRepository.findAll();
     }
 
     public void addWork(TromboneWork work) {
-        if (work.getComposer() != null) {
-            Composer resolved = findOrCreateComposer(work.getComposer().getFullName());
+        if (work.getComposer() != null && work.getComposer().getLastName() != null) {
+            String fullName = (work.getComposer().getFirstName() != null ? work.getComposer().getFirstName() + " " : "") + work.getComposer().getLastName();
+            Composer resolved = findOrCreateComposer(fullName);
             if (resolved != null) {
                 work.setComposer(resolved);
-                work.setComposerId(resolved.getId());
             }
         }
-        List<TromboneWork> works = getAllWorks();
-        works.add(work);
-        storageService.saveWorks(works);
+        workRepository.save(work);
     }
 
     public void updateWork(TromboneWork updatedWork) {
-        if (updatedWork.getComposer() != null) {
-            Composer resolved = findOrCreateComposer(updatedWork.getComposer().getFullName());
+        if (updatedWork.getComposer() != null && updatedWork.getComposer().getLastName() != null) {
+            String fullName = (updatedWork.getComposer().getFirstName() != null ? updatedWork.getComposer().getFirstName() + " " : "") + updatedWork.getComposer().getLastName();
+            Composer resolved = findOrCreateComposer(fullName);
             if (resolved != null) {
                 updatedWork.setComposer(resolved);
-                updatedWork.setComposerId(resolved.getId());
             }
         }
-        List<TromboneWork> works = getAllWorks();
-        for (int i = 0; i < works.size(); i++) {
-            if (works.get(i).getId().equals(updatedWork.getId())) {
-                works.set(i, updatedWork);
-                break;
-            }
-        }
-        storageService.saveWorks(works);
+        workRepository.save(updatedWork);
     }
 
     public void deleteWork(Long id) {
-        List<TromboneWork> works = getAllWorks();
-        works.removeIf(work -> work.getId().equals(id));
-        storageService.saveWorks(works);
+        workRepository.deleteById(id);
     }
 
     public List<TromboneWork> filterByType(List<TromboneWork> allWorks, String type) {

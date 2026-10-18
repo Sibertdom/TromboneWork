@@ -1,0 +1,31 @@
+[ {
+  "id" : 1,
+  "firstName" : "Ferdinand",
+  "lastName" : "David",
+  "nationality" : "Німеччина",
+  "birthYear" : 1810,
+  "deathYear" : 1873,
+  "era" : "Романтизм",
+  "biography" : "Німецький скрипаль-віртуоз, композитор та педагог.",
+  "portraitUrl" : null
+}, {
+  "id" : 2,
+  "firstName" : "Ernst",
+  "lastName" : "Sachse",
+  "nationality" : "Німеччина",
+  "birthYear" : 1810,
+  "deathYear" : 1849,
+  "era" : "Романтизм",
+  "biography" : "Німецький трубач і композитор XIX століття.",
+  "portraitUrl" : null
+}, {
+  "id" : 3,
+  "firstName" : "Georg Christoph",
+  "lastName" : "Wagenseil",
+  "nationality" : "Австрія",
+  "birthYear" : 1715,
+  "deathYear" : 1777,
+  "era" : "Класицизм",
+  "biography" : "Австрійський композитор та органіст епохи класицизму.",
+  "portraitUrl" : null
+} ]
