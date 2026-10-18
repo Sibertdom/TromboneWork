@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.SplitPane?>
+
+
+<BorderPane prefHeight="100.0" prefWidth="200.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.trombonework.Controller">
+
+    <!-- 1. ШАПКА (Голова) -->
+    <!-- 1. ШАПКА (Голова) -->
+    <top>
+        <VBox minWidth="100.0" style="-fx-background-color: #2c3e50; -fx-padding: 15; -fx-alignment: center; -fx-spacing: 10;">
+            <!-- Головна назва -->
+            <Label fx:id="mainTitleLabel"
+                   text="Твори для тромбону"
+                   minWidth="100.0"
+                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;" />
+
+            <!-- Панель кнопок під назвою -->
+            <HBox style="-fx-alignment: center; -fx-spacing: 10;">
+                <Button onAction="#onFilterButtonClick"
+                        style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-cursor: hand;"
+                        text="Всі" />
+
+                <Button onAction="#onFilterButtonClick"
+                        style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-cursor: hand;"
+                        text="Альт" />
+
+                <Button onAction="#onFilterButtonClick"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;"
+                        text="Тенор" />
+
+                <Button onAction="#onFilterButtonClick"
+                        style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-cursor: hand;"
+                        text="Бас" />
+            </HBox>
+
+            <!-- Рядок 2: Кнопки управління (Додати, Редагувати, Видалити) -->
+            <HBox style="-fx-alignment: center; -fx-spacing: 10;">
+                <Button onAction="#onAddWorkClick"
+                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                        text="Додати" />
+
+                <Button onAction="#onEditWorkClick"
+                        style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                        text="Редагувати" />
+
+                <Button onAction="#onDeleteWorkClick"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                        text="Видалити" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- 2. ЦЕНТРАЛЬНА ЧАСТИНА (SplitPane із можливістю регулювання ширини) -->
+    <center>
+        <SplitPane dividerPositions="0.2, 0.75" focusTraversable="true">
+            <!-- Ліве вухо: Фільтри / Меню -->
+            <VBox minWidth="120.0" prefWidth="180.0" style="-fx-background-color: #ecf0f1; -fx-padding: 10; -fx-spacing: 10;">
+                <Label style="-fx-font-weight: bold;" text="Фільтри / Меню" />
+            </VBox>
+
+            <!-- Середина: Таблиця з творами -->
+            <VBox minWidth="100.0" style="-fx-background-color: #ffffff; -fx-padding: 10;">
+                <TableView fx:id="worksTable" VBox.vgrow="ALWAYS">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                    <columns>
+                        <TableColumn fx:id="titleColumn" text="Назва" />
+                        <TableColumn fx:id="composerColumn" text="Композитор" />
+                        <TableColumn fx:id="typeColumn" text="Тромбон" />
+                        <TableColumn fx:id="difficultyColumn" text="Складність" />
+                        <TableColumn fx:id="genreColumn" text="Жанр" />
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Праве вухо: Деталі / Нотатки -->
+            <VBox minWidth="150.0" prefWidth="250.0" spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-padding: 15;">
+                <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Деталі твору" />
+
+                <Separator />
+
+                <Label style="-fx-font-weight: bold;" text="Нотатки та примітки:" />
+
+                <TextArea fx:id="notesDetailsArea"
+                          editable="false"
+                          promptText="Виберіть твір у таблиці для перегляду нотаток..."
+                          style="-fx-background-color: transparent;"
+                          wrapText="true"
+                          VBox.vgrow="ALWAYS" />
+            </VBox>
+        </SplitPane>
+    </center>
+
+    <!-- 5. НИЗ (Підвал / Статус-бар) -->
+    <bottom>
+        <HBox style="-fx-background-color: #bdc3c7; -fx-padding: 8; -fx-alignment: center-left;">
+            <Label text="Статус: Готово | Всього творів: 0" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
